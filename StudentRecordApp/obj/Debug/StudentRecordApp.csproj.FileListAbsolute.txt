@@ -1,0 +1,10 @@
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\bin\Debug\StudentRecordApp.exe.config
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\bin\Debug\StudentRecordApp.exe
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\bin\Debug\StudentRecordApp.pdb
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.csproj.AssemblyReference.cache
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.Properties.Resources.resources
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.csproj.GenerateResource.cache
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.csproj.CoreCompileInputs.cache
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.exe
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.pdb
+C:\Users\Lenovo\source\repos\StudentRecordApp\StudentRecordApp\obj\Debug\StudentRecordApp.exe.config
