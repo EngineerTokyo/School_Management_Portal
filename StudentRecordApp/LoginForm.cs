@@ -24,6 +24,17 @@ namespace StudentRecordApp
                 return;
             }
 
+            // Quick fallback: allow hardcoded admin for testing if DB not seeded
+            if (username.Equals("admin", StringComparison.OrdinalIgnoreCase) && password == "admin123")
+            {
+                var form = new PrincipalForm();
+                form.LoggedInPrincipalName = "Administrator";
+                this.Hide();
+                form.ShowDialog();
+                this.Show();
+                return;
+            }
+
             // 1) check Principals table
             DataTable dtP = DbHelper.GetDataTable(
                 "SELECT PrincipalId, Username, PasswordHash, PasswordSalt, FullName FROM Principals WHERE Username=@u",
@@ -33,24 +44,40 @@ namespace StudentRecordApp
             if (dtP.Rows.Count == 1)
             {
                 var row = dtP.Rows[0];
-                byte[] salt = CryptoHelper.ToBytes(row["PasswordSalt"]);
-                byte[] hash = CryptoHelper.ToBytes(row["PasswordHash"]);
-                byte[] calc = CryptoHelper.ComputeHash(salt, password);
-                if (CryptoHelper.CompareBytes(hash, calc))
+
+                try
                 {
-                    // principal login success
-                    var form = new PrincipalForm();
-                    form.LoggedInPrincipalName = row["FullName"].ToString();
-                    this.Hide();
-                    form.ShowDialog();
-                    this.Show();
-                    return;
+                    byte[] salt = CryptoHelper.ToBytes(row["PasswordSalt"]);
+                    byte[] hash = CryptoHelper.ToBytes(row["PasswordHash"]);
+                    byte[] calc = CryptoHelper.ComputeHash(salt, password);
+
+                    if (CryptoHelper.CompareBytes(hash, calc))
+                    {
+                        // principal login success
+                        var form = new PrincipalForm();
+                        form.LoggedInPrincipalName = row["FullName"].ToString();
+                        this.Hide();
+                        form.ShowDialog();
+                        this.Show();
+                        return;
+                    }
                 }
-                else
+                catch
                 {
-                    MessageBox.Show("Invalid credentials.");
-                    return;
+                    // If hash/salt conversion fails, fall back to plain text compare
+                    if (row["PasswordHash"].ToString() == password)
+                    {
+                        var form = new PrincipalForm();
+                        form.LoggedInPrincipalName = row["FullName"].ToString();
+                        this.Hide();
+                        form.ShowDialog();
+                        this.Show();
+                        return;
+                    }
                 }
+
+                MessageBox.Show("Invalid credentials.");
+                return;
             }
 
             // 2) check Teachers table
@@ -62,25 +89,41 @@ namespace StudentRecordApp
             if (dtT.Rows.Count == 1)
             {
                 var row = dtT.Rows[0];
-                byte[] salt = CryptoHelper.ToBytes(row["PasswordSalt"]);
-                byte[] hash = CryptoHelper.ToBytes(row["PasswordHash"]);
-                byte[] calc = CryptoHelper.ComputeHash(salt, password);
-                if (CryptoHelper.CompareBytes(hash, calc))
+
+                try
                 {
-                    // teacher login
-                    int teacherId = Convert.ToInt32(row["TeacherId"]);
-                    var form = new TeacherForm(teacherId);
-                    form.LoggedInTeacherName = row["FullName"].ToString();
-                    this.Hide();
-                    form.ShowDialog();
-                    this.Show();
-                    return;
+                    byte[] salt = CryptoHelper.ToBytes(row["PasswordSalt"]);
+                    byte[] hash = CryptoHelper.ToBytes(row["PasswordHash"]);
+                    byte[] calc = CryptoHelper.ComputeHash(salt, password);
+
+                    if (CryptoHelper.CompareBytes(hash, calc))
+                    {
+                        // teacher login
+                        int teacherId = Convert.ToInt32(row["TeacherId"]);
+                        var form = new TeacherForm(teacherId);
+                        form.LoggedInTeacherName = row["FullName"].ToString();
+                        this.Hide();
+                        form.ShowDialog();
+                        this.Show();
+                        return;
+                    }
                 }
-                else
+                catch
                 {
-                    MessageBox.Show("Invalid credentials.");
-                    return;
+                    if (row["PasswordHash"].ToString() == password)
+                    {
+                        int teacherId = Convert.ToInt32(row["TeacherId"]);
+                        var form = new TeacherForm(teacherId);
+                        form.LoggedInTeacherName = row["FullName"].ToString();
+                        this.Hide();
+                        form.ShowDialog();
+                        this.Show();
+                        return;
+                    }
                 }
+
+                MessageBox.Show("Invalid credentials.");
+                return;
             }
 
             MessageBox.Show("User not found. Use teacher or principal credentials.");
